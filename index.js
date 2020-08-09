@@ -1,7 +1,7 @@
 const width = 500;
 const height = 500;
-const pop = 6;
-const res = 3;
+const pop = 20;
+const res = 6;
 
 const dots = new Array(pop);
 const randomSpot = {
@@ -12,39 +12,6 @@ const randomSpot = {
 };
 
 const goodPoints = [];
-
-function setup() {
-	createCanvas(width, height);
-	for (let i = 0; i < dots.length; i++) {
-		dots[i] = {
-			x: Math.floor(Math.random() * width),
-			y: Math.floor(Math.random() * height),
-			type: i % 2,
-		};
-	}
-
-	for (let i = 0; i < width; i += res) {
-		for (let j = 0; j < height; j += res) {
-			dotsC = [...dots, randomSpot, { x: i, y: j, target: true, type: 0 }];
-
-			let good = false;
-			while (dotsC.length > 0) {
-				pairI = findpair(dotsC);
-
-				if (pairI[0] < pairI[1]) {
-					pairI.reverse();
-				}
-
-				if (dotsC[pairI[0]].target && dotsC[pairI[1]].target) good = true;
-				dotsC.splice(pairI[0], 1);
-				dotsC.splice(pairI[1], 1);
-			}
-			if (good) {
-				goodPoints.push({ x: i, y: j });
-			}
-		}
-	}
-}
 
 const colors = {
 	0: '#00bbff',
@@ -71,23 +38,70 @@ function findpair(dots) {
 	return shortestIndexes;
 }
 
-function draw() {
+function setup() {
+	createCanvas(width, height);
+	// generating random points
+	for (let i = 0; i < dots.length; i++) {
+		dots[i] = {
+			x: Math.floor(Math.random() * width),
+			y: Math.floor(Math.random() * height),
+			type: i % 2,
+		};
+	}
+
+	// searching for yellow regions
+	for (let i = 0; i < width; i += res) {
+		for (let j = 0; j < height; j += res) {
+			dotsC = [...dots, randomSpot, { x: i, y: j, target: true, type: 0 }];
+
+			let good = false;
+			while (dotsC.length > 0) {
+				pairI = findpair(dotsC);
+
+				if (pairI[0] < pairI[1]) {
+					pairI.reverse();
+				}
+
+				if (dotsC[pairI[0]].target && dotsC[pairI[1]].target) good = true;
+				dotsC.splice(pairI[0], 1);
+				dotsC.splice(pairI[1], 1);
+			}
+			if (good) {
+				goodPoints.push({ x: i, y: j });
+			}
+		}
+	}
+}
+
+function drawYellowRegions() {
 	strokeWeight(res * 1.5);
-	background(50);
 	stroke('#990');
 	for (goodPoint of goodPoints) {
 		point(goodPoint.x, goodPoint.y);
 	}
+}
 
+function drawRegDots() {
 	strokeWeight(6);
 	for (const dot of dots) {
 		stroke(colors[dot.type]);
 		point(dot.x, dot.y, 5);
 	}
-	strokeWeight(10);
-	point(randomSpot.x, randomSpot.y);
+}
 
-	dotsC = [...dots, randomSpot, { x: mouseX, y: mouseY, target: true, type: 0 }]; // , { x: mouseX, y: mouseY, type: 1 }
+function draw() {
+	background(50);
+	//drawYellowRegions();
+
+	drawRegDots();
+	// strokeWeight(10);
+	// point(randomSpot.x, randomSpot.y);
+
+	dotsC = [
+		...dots,
+		// randomSpot,
+		// { x: mouseX, y: mouseY, target: true, type: 0 },
+	];
 	strokeWeight(1);
 	stroke('#0f0');
 
