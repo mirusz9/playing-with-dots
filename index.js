@@ -1,14 +1,17 @@
 const width = 500;
 const height = 500;
-const pop = 30;
-const res = 2;
+const pop = 6;
+const res = 3;
 
 const dots = new Array(pop);
 const randomSpot = {
 	x: Math.floor(Math.random() * width),
 	y: Math.floor(Math.random() * height),
+	target: true,
 	type: 1,
 };
+
+const goodPoints = [];
 
 function setup() {
 	createCanvas(width, height);
@@ -20,26 +23,24 @@ function setup() {
 		};
 	}
 
-	strokeWeight(res * 1.5);
-	background(50);
-
 	for (let i = 0; i < width; i += res) {
 		for (let j = 0; j < height; j += res) {
-			dotsC = [...dots, randomSpot, { x: i, y: j, type: 0 }];
+			dotsC = [...dots, randomSpot, { x: i, y: j, target: true, type: 0 }];
 
 			let good = false;
 			while (dotsC.length > 0) {
 				pairI = findpair(dotsC);
 
-				pairI.sort((a, b) => b - a);
+				if (pairI[0] < pairI[1]) {
+					pairI.reverse();
+				}
 
+				if (dotsC[pairI[0]].target && dotsC[pairI[1]].target) good = true;
 				dotsC.splice(pairI[0], 1);
 				dotsC.splice(pairI[1], 1);
-				if (pairI[0] === pop - 1 && pairI[1] === pop - 2) good = true;
 			}
 			if (good) {
-				stroke('#ff0');
-				point(i, j);
+				goodPoints.push({ x: i, y: j });
 			}
 		}
 	}
@@ -71,15 +72,22 @@ function findpair(dots) {
 }
 
 function draw() {
-	strokeWeight(3);
+	strokeWeight(res * 1.5);
+	background(50);
+	stroke('#990');
+	for (goodPoint of goodPoints) {
+		point(goodPoint.x, goodPoint.y);
+	}
+
+	strokeWeight(6);
 	for (const dot of dots) {
 		stroke(colors[dot.type]);
 		point(dot.x, dot.y, 5);
 	}
-	strokeWeight(6);
+	strokeWeight(10);
 	point(randomSpot.x, randomSpot.y);
 
-	dotsC = [...dots]; // , { x: mouseX, y: mouseY, type: 1 }
+	dotsC = [...dots, randomSpot, { x: mouseX, y: mouseY, target: true, type: 0 }]; // , { x: mouseX, y: mouseY, type: 1 }
 	strokeWeight(1);
 	stroke('#0f0');
 
@@ -92,11 +100,15 @@ function draw() {
 			dotsC[pairI[1]].x,
 			dotsC[pairI[1]].y
 		);
-		pairI.sort((a, b) => b - a);
+		if (pairI[0] < pairI[1]) {
+			pairI.reverse();
+		}
 
 		dotsC.splice(pairI[0], 1);
 		dotsC.splice(pairI[1], 1);
 	}
+}
 
+function mousePressed() {
 	noLoop();
 }
