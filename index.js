@@ -1,6 +1,6 @@
 const width = 500;
 const height = 500;
-const pop = 20;
+const pop = 4;
 const res = 6;
 
 const dots = new Array(pop);
@@ -11,7 +11,7 @@ const randomSpot = {
 	type: 1,
 };
 
-const goodPoints = [];
+const yellowRegions = [];
 
 const colors = {
 	0: '#00bbff',
@@ -67,7 +67,7 @@ function setup() {
 				dotsC.splice(pairI[1], 1);
 			}
 			if (good) {
-				goodPoints.push({ x: i, y: j });
+				yellowRegions.push({ x: i, y: j });
 			}
 		}
 	}
@@ -76,8 +76,8 @@ function setup() {
 function drawYellowRegions() {
 	strokeWeight(res * 1.5);
 	stroke('#990');
-	for (goodPoint of goodPoints) {
-		point(goodPoint.x, goodPoint.y);
+	for (yellowDot of yellowRegions) {
+		point(yellowDot.x, yellowDot.y);
 	}
 }
 
@@ -91,16 +91,16 @@ function drawRegDots() {
 
 function draw() {
 	background(50);
-	//drawYellowRegions();
+	drawYellowRegions();
 
 	drawRegDots();
-	// strokeWeight(10);
-	// point(randomSpot.x, randomSpot.y);
+	strokeWeight(10);
+	point(randomSpot.x, randomSpot.y);
 
 	dotsC = [
 		...dots,
-		// randomSpot,
-		// { x: mouseX, y: mouseY, target: true, type: 0 },
+		randomSpot,
+		{ x: mouseX, y: mouseY, target: true, type: 0 },
 	];
 	strokeWeight(1);
 	stroke('#0f0');
