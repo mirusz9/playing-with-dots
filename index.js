@@ -1,6 +1,6 @@
 const width = 500;
 const height = 500;
-const pop = 4;
+const pop = 30;
 const res = 6;
 
 const dots = new Array(pop);
